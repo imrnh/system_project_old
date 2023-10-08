@@ -101,3 +101,19 @@ CREATE TABLE lyrics_annotation(
     music_id INTEGER REFERENCES music(music_id),
     line_idx INTEGER
 );
+
+CREATE TABLE discovered_list(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER REFERENCES users(user_id), 
+    music_id INTEGER REFERENCES music(music_id),
+    discovered_at DATETIME DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+6 hours'))
+);
+
+
+CREATE TABLE location_charts(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    music_id INTEGER REFERENCES music(music_id),
+    discovering_country TEXT,
+    no_of_discovery INTEGER,
+    discovered_at DATETIME DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+6 hours'))
+);
