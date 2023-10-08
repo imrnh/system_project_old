@@ -56,9 +56,48 @@ CREATE TABLE music_genre(
 );
 
 
+CREATE TABLE music_fingerprint(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    music_id INTEGER REFERENCES music(music_id),
+    music_hash INTEGER,
+    music_hash_with_previous_sec INTEGER,
+    curr_sec INTEGER,
+    created_at DATETIME DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+6 hours')) 
+);
+
+
 CREATE TABLE playlist_music (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     playlist_id INTEGER REFERENCES playlist(playlist_id),
     song_id INTEGER REFERENCES song(song_id),
     created_at DATETIME DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+6 hours'))
+);
+
+
+
+
+
+
+------ annotation schema 
+
+CREATE TABLE annotation(
+    ant_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    annotation_text TEXT,
+    user_id INTEGER REFERENCES users(user_id),
+    created_at DATETIME DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', '+6 hours'))
+);
+
+
+CREATE TABLE music_annotation(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ant_id INTEGER REFERENCES annotation(ant_id),
+    music_id INTEGER REFERENCES music(music_id)
+);
+
+
+CREATE TABLE lyrics_annotation(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ant_id INTEGER REFERENCES annotation(ant_id),
+    music_id INTEGER REFERENCES music(music_id),
+    line_idx INTEGER
 );
