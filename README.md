@@ -10,6 +10,9 @@ The directory of python api. The following api serves as the backend of the flut
 ### **app**
 Contains the mobile application source code.
 
+### **models**
+All the saved machine learning models to serve the app.
+
 
 ### **database**
 Contains all the sql code to create the database. <br>
