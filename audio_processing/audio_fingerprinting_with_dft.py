@@ -71,15 +71,27 @@ class FingerprintPipeline:
             prv_matrix.append(positive_range_values)
         return prv_matrix
 
+
+    def hash_function(self, audio_blocks):
+        block_hash = []
+        for blc_idx, block in enumerate(audio_blocks):
+            vhsh = 0
+            for idx, sv in enumerate(block):
+                vhsh += (sv if sv > 0 else 0) * (idx * 1e12) #every range is 1e12 times apart.
+            block_hash.append({"hash": vhsh, "idx": blc_idx}) #a pair of hash, ms_info
+        
+        return block_hash
+
     def fingerprint(self, file_name):
         audio_blocks = self.read_audio(file_name=file_name)
         audio_blocks = self.fourier_transform(audio_blocks=audio_blocks)
         fingerprints = self.get_range_max(audio_blocks)
+        hashes = self.hash_function(fingerprints)
 
-        return np.array(fingerprints)
+        return np.array(hashes)
 
     
 pipeline = FingerprintPipeline()
 fingerprints = pipeline.fingerprint("file_1.mp3")
 
-print(fingerprints[12])
+print(fingerprints)
