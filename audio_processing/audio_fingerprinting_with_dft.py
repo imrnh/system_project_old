@@ -1,13 +1,12 @@
 import numpy as np
 import pandas as pd
 import librosa as lr
-import matplotlib.pyplot as plt
 from types import SimpleNamespace
 import math
 
 
 audio_config = SimpleNamespace(
-    base_path = "/workspaces/system_project/audio_processing/assets/audio",
+    base_path = "C:/Users/muimr/OneDrive/Personals/Documents/System Project/audio_processing/assets/audio",
     sr = 44100,
     mono = True,
     block_size = 100, #in ms
@@ -35,7 +34,7 @@ class FingerprintPipeline:
     def fourier_transform(self, audio_blocks):
         dft_transformed = []
         for block in audio_blocks:
-            _fft_res_arr = (np.fft.fft(block))
+            _fft_res_arr = np.abs(np.fft.fft(block))
             dft_transformed.append(_fft_res_arr)
 
         return dft_transformed
@@ -52,18 +51,35 @@ class FingerprintPipeline:
         
         return eval_arr
 
-    def get_range_max(self, audio_block):
-        pass
+    def get_range_max(self, audio_blocks):
+        positive_range = [1e-9, 1e-5, 1e-3, 1e-1, 1, 50, 100, 150, 200, 250]
+        
+        prv_matrix = []
+
+        for audio_block in audio_blocks:
+            positive_range_values = [-1] * 10 #creating an array with length 12 and all element filled with -1
+            for sv in audio_block:
+                for idx, pr in enumerate(positive_range):
+                    if (idx + 1) < len(positive_range):
+                        min_lim_for_sv = positive_range[idx + 1]
+                    else:
+                        min_lim_for_sv = 1e9 #a random maximum range to allow 250 to infinity in the last container.
+                    if (sv > pr) and (sv < min_lim_for_sv):
+                        if(positive_range_values[idx] < pr):
+                            positive_range_values[idx] = sv
+                    
+            prv_matrix.append(positive_range_values)
+        return prv_matrix
 
     def fingerprint(self, file_name):
         audio_blocks = self.read_audio(file_name=file_name)
         audio_blocks = self.fourier_transform(audio_blocks=audio_blocks)
-        audio_blocks = self.complex_eval(audio_blocks)
-        
-        return np.array(audio_blocks)
+        fingerprints = self.get_range_max(audio_blocks)
+
+        return np.array(fingerprints)
 
     
 pipeline = FingerprintPipeline()
-x = pipeline.fingerprint("file_1.mp3")
+fingerprints = pipeline.fingerprint("file_1.mp3")
 
-print(x)
+print(fingerprints[12])
