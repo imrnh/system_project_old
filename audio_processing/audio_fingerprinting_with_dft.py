@@ -6,7 +6,7 @@ import math
 
 
 audio_config = SimpleNamespace(
-    base_path = "C:/Users/muimr/OneDrive/Personals/Documents/System Project/audio_processing/assets/audio",
+    base_path = "/workspaces/system_project/assets/audio",
     sr = 44100,
     mono = True,
     block_size = 100, #in ms
@@ -56,7 +56,7 @@ class FingerprintPipeline:
         
         prv_matrix = []
 
-        for audio_block in audio_blocks:
+        for ab_idx, audio_block in enumerate(audio_blocks):
             positive_range_values = [-1] * 10 #creating an array with length 12 and all element filled with -1
             for sv in audio_block:
                 for idx, pr in enumerate(positive_range):
@@ -78,7 +78,7 @@ class FingerprintPipeline:
             vhsh = 0
             for idx, sv in enumerate(block):
                 vhsh += (sv if sv > 0 else 0) * (idx * 1e12) #every range is 1e12 times apart.
-            block_hash.append({"hash": vhsh, "idx": blc_idx}) #a pair of hash, ms_info
+            block_hash.append({"hash": vhsh, "block_values": block, "idx": blc_idx}) #a pair of hash, ms_info
         
         return block_hash
 
@@ -88,10 +88,4 @@ class FingerprintPipeline:
         fingerprints = self.get_range_max(audio_blocks)
         hashes = self.hash_function(fingerprints)
 
-        return np.array(hashes)
-
-    
-pipeline = FingerprintPipeline()
-fingerprints = pipeline.fingerprint("file_1.mp3")
-
-print(fingerprints)
+        return hashes
