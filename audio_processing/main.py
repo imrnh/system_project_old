@@ -1,4 +1,4 @@
-from audio_fingerprinting_with_dft import FingerprintPipeline
+from fingerprint_pileline import FingerprintPipeline
 
 pipeline = FingerprintPipeline()
 fingerprints = pipeline.fingerprint("file_1.mp3")
